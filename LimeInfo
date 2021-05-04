@@ -1,0 +1,62 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
+from progress.bar import IncrementalBar
+from bs4 import BeautifulSoup
+import requests
+from urllib.request import urlopen
+import time, csv
+
+#Meddelande
+print("------------------------------------------------------------")
+print("Välkommen till Brand Deliverys automatiserade CRM-verktyg")
+print("Skapat av: Tobias Helling")
+print("------------------------------------------------------------")
+print("https://go.lime-go.com")
+
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36'
+}
+url = "https://go.lime-go.com/"
+
+#Logga in på Lime
+
+username = input("E-postadress: ")
+password = input("Lösenord: ")
+
+#Välj ringlista
+
+rlista = input("Ringlista ID: ")
+
+class LimeGO: 
+    
+    def __init__(self):
+        self.driver = webdriver.Chrome(executable_path='chromedriver.exe')
+
+    def login(self):
+        
+        self.driver.get(url)
+        time.sleep(3)
+
+        user_ = self.driver.find_element_by_class_name('UserName').send_keys(username)
+        time.sleep(2)
+
+        _pass = self.driver.find_element_by_class_name('Password').send_keys(password)
+        time.sleep(2)
+
+        self.driver.find_element_by_id('logonbutton').click()
+        time.sleep(5)
+
+    def find_company(self):
+
+        rlista = "https://go.lime-go.com/395012/app/targetlist/1643635"
+        page = self.driver.get(rlista)
+
+        soup = BeautifulSoup(page, features='lxml')
+        
+        for a in soup.find_all('a', href=True):
+            print('Länk: ', a['href'])
+
+lime = LimeGO()
+lime.login()
+lime.find_company()
